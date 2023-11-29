@@ -15,8 +15,6 @@ namespace xasset.editor.Odin
     {
         private static OdinMenuTree odinMenuTree;
 
-        private static List<Build> cacheBuildConfig;
-
         private static Dictionary<string, object>
             cacheMenuDic; //不能直接缓存OdinMenuTree 内部设计不方便缓存使用，故每次打开重新new OdinMenuTree 利用缓存的cacheMenuDic 减少打开window时间
 
@@ -33,7 +31,7 @@ namespace xasset.editor.Odin
         private void OpenWindow()
         {
             odinMenuTree = new OdinMenuTree(false);
-            if (!HaveBuildConfigChanged())
+            if (!OdinExtension.IsBuildConfigChanged())
             {
                 UpdateMenuTree();
                 return;
@@ -51,41 +49,13 @@ namespace xasset.editor.Odin
         }
 
         /// <summary>
-        /// 检查是否需要重新加载配置
-        /// </summary>
-        /// <returns></returns>
-        private bool HaveBuildConfigChanged()
-        {
-            if (cacheBuildConfig == null) return true;
-            var files = EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
-            if (files.Length != cacheBuildConfig.Count) return true;
-            for (int i = 0; i < cacheBuildConfig.Count; i++)
-            {
-                Build cacheBuild = cacheBuildConfig[i];
-                Build fileBuild = files[i] as Build;
-                if (fileBuild == null) return true;
-                if (cacheBuild.groups.Length != fileBuild.groups.Length) return true;
-                for (int j = 0; j < cacheBuild.groups.Length; j++)
-                {
-                    BuildGroup cacheBuildGroup = cacheBuild.groups[j];
-                    BuildGroup fileBuildGroup = fileBuild.groups[j];
-                    if (cacheBuildGroup.assets.Length != fileBuildGroup.assets.Length) return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// 初始化配置
         /// </summary>
         /// <returns></returns>
         private IEnumerator InitBuildConfig()
         {
-            // odinMenuTree.Add("Settings", new OdinBuildSettings());
-
-            if (cacheBuildConfig == null) cacheBuildConfig = new List<Build>();
-            cacheBuildConfig.Clear();
+            odinMenuTree.Add("Settings", new OdinBuildSettings());
+            OdinExtension.ClearCacheBuildDic();
             if (cacheMenuDic == null) cacheMenuDic = new Dictionary<string, object>();
             cacheMenuDic.Clear();
             var list = EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
@@ -98,7 +68,8 @@ namespace xasset.editor.Odin
                     continue;
                 }
 
-                cacheBuildConfig.Add(build);
+                List<OdinBuildGroup> odinBuildGroups = new List<OdinBuildGroup>();
+                OdinExtension.CacheBuildDic(build,odinBuildGroups);
                 AddGroupsMenu(build);
             }
 
@@ -120,6 +91,7 @@ namespace xasset.editor.Odin
                 string parentMenuName = $"{build.name}/{group.name}";
                 OdinBuildGroup odinBuildGroup = new OdinBuildGroup(group);
                 OdinBuildGroupEditor menuGroup = new OdinBuildGroupEditor(odinBuildGroup);
+                OdinExtension.cacheBuildDic[build].Add(odinBuildGroup);
                 odinMenuTree.Add(parentMenuName, menuGroup);
                 if (!cacheMenuDic.ContainsKey(parentMenuName))
                     cacheMenuDic.Add(parentMenuName, menuGroup);
@@ -158,7 +130,7 @@ namespace xasset.editor.Odin
             {
                 string subDirectoryPath = subDirectories[i].assetPath;
                 BuildEntry subBuildEntry =
-                    OdinExtension.GetBuildEntryByAssetPathAndParentEntry(subDirectoryPath, odinBuildFolder.buildEntry);
+                    OdinExtension.CreateBuildEntry(subDirectoryPath, odinBuildFolder.buildEntry);
                 OdinBuildFolder subOdinBuildFolder = new OdinBuildFolder(subBuildEntry, groupEditor.odinBuildGroup);
                 AddSubDirectoryMenu(subOdinBuildFolder, groupEditor);
             }

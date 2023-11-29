@@ -32,7 +32,7 @@ namespace xasset.editor.Odin
             {
                 string subAssetPath = subAssets[i].assetPath;
                 BuildEntry subBuildEntry =
-                    OdinExtension.GetBuildEntryByAssetPathAndParentEntry(subAssetPath, buildEntry);
+                    OdinExtension.CreateBuildEntry(subAssetPath, buildEntry);
                 if (IsExistedBuildGroup(subBuildEntry)) continue;
                 list.Add(subBuildEntry);
             }

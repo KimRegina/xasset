@@ -1,10 +1,65 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using com.regina.fUnityTools.Editor;
+using UnityEngine;
 
 namespace xasset.editor.Odin
 {
     public class OdinExtension
     {
+        public static UnityEngine.Object[] GetAllBuildConfig => EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
+
+        public static bool IsBuildConfigChanged()
+        {
+            if (cacheBuildDic == null) return true;
+            var files = GetAllBuildConfig;
+            if (files.Length != cacheBuildDic.Keys.Count) return true;
+            for (int i = 0; i < files.Length; i++)
+            {
+                Build fileBuild = files[i] as Build;
+                if (fileBuild == null)
+                {
+                    Debug.LogError($"find not {typeof(Build)} file: {files[i].name}");
+                    continue;
+                }
+
+                Build cacheBuild = null;
+                foreach (var item in cacheBuildDic.Keys)
+                {
+                    if (item.name == fileBuild.name)
+                    {
+                        cacheBuild = item;
+                        break;
+                    }
+                }
+
+                if (cacheBuild == null) return true;
+
+                if (cacheBuild.groups.Length != fileBuild.groups.Length) return true;
+                for (int j = 0; j < cacheBuild.groups.Length; j++)
+                {
+                    BuildGroup cacheBuildGroup = cacheBuild.groups[j];
+                    BuildGroup fileBuildGroup = fileBuild.groups[j];
+                    if (cacheBuildGroup.assets.Length != fileBuildGroup.assets.Length) return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static Dictionary<Build, List<OdinBuildGroup>> cacheBuildDic;
+
+        public static void ClearCacheBuildDic()
+        {
+            if (cacheBuildDic == null) cacheBuildDic = new Dictionary<Build, List<OdinBuildGroup>>();
+            cacheBuildDic.Clear();
+        }
+        
+        public static void CacheBuildDic(Build key, List<OdinBuildGroup> val)
+        {
+            cacheBuildDic.Add(key, val);
+        }
+
         public static void SaveBuildConfig(Build build)
         {
             var array = EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
@@ -32,7 +87,7 @@ namespace xasset.editor.Odin
             return entry;
         }
 
-        public static BuildEntry GetBuildEntryByAssetPathAndParentEntry(string assetPath, BuildEntry parent)
+        public static BuildEntry CreateBuildEntry(string assetPath, BuildEntry parent)
         {
             BuildEntry entry = new BuildEntry();
             entry.asset = assetPath;
@@ -62,19 +117,6 @@ namespace xasset.editor.Odin
         {
             int lastIndex = buildEntry.asset.LastIndexOf('/');
             return buildEntry.asset.Substring(lastIndex);
-        }
-        
-        public static BuildEntry GetBuildEntryByAssetPath(string assetPath, BuildEntry parentEntry)
-        {
-            BuildEntry newBuildEntry = new BuildEntry();
-            newBuildEntry.asset = assetPath;
-            newBuildEntry.addressMode = parentEntry.addressMode;
-            newBuildEntry.parent = parentEntry.parent;
-            newBuildEntry.bundleMode = parentEntry.bundleMode;
-            newBuildEntry.owner = parentEntry.owner;
-            newBuildEntry.filter = parentEntry.filter;
-            newBuildEntry.bundle = parentEntry.bundle;
-            return newBuildEntry;
         }
     }
 }
