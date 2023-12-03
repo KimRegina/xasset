@@ -27,10 +27,10 @@ namespace xasset.editor.Odin
         public void CollectEntries()
         {
             list.Clear();
-            EditorAsset[] subAssets = EditorFileUtils.GetTopUnityAssets(buildEntry.asset);
+            string[] subAssets = EditorFileUtils.GetTopAssetPaths(buildEntry.asset);
             for (int i = 0; i < subAssets.Length; i++)
             {
-                string subAssetPath = subAssets[i].assetPath;
+                string subAssetPath = subAssets[i];
                 BuildEntry subBuildEntry =
                     OdinExtension.CreateBuildEntry(subAssetPath, buildEntry);
                 if (IsExistedBuildGroup(subBuildEntry)) continue;

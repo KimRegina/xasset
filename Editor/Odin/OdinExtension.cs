@@ -7,7 +7,7 @@ namespace xasset.editor.Odin
 {
     public class OdinExtension
     {
-        public static UnityEngine.Object[] GetAllBuildConfig => EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
+        public static UnityEngine.Object[] GetAllBuildConfig => EditorFileUtils.FindAllAssets<UnityEngine.Object>("Assets/xasset/Config/Builds");
 
         public static bool IsBuildConfigChanged()
         {
@@ -62,7 +62,7 @@ namespace xasset.editor.Odin
 
         public static void SaveBuildConfig(Build build)
         {
-            var array = EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
+            var array = EditorFileUtils.FindAllAssets<Build>("Assets/xasset/Config/Builds");
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i].name == build.name)

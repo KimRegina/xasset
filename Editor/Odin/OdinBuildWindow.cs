@@ -58,7 +58,7 @@ namespace xasset.editor.Odin
             OdinExtension.ClearCacheBuildDic();
             if (cacheMenuDic == null) cacheMenuDic = new Dictionary<string, object>();
             cacheMenuDic.Clear();
-            var list = EditorFileUtils.GetAllAssetsByAssetDirectoryPath("Assets/xasset/Config/Builds");
+            var list = EditorFileUtils.FindAllAssets<Build>("Assets/xasset/Config/Builds");
             for (int i = 0; i < list.Length; i++)
             {
                 Build build = list[i] as Build;
@@ -113,8 +113,7 @@ namespace xasset.editor.Odin
         /// <param name="groupEditor"></param>
         private static void AddSubDirectoryMenu(OdinBuildFolder odinBuildFolder, OdinBuildGroupEditor groupEditor)
         {
-            DirectoryInfo info = EditorFileUtils.GetUnityDirectoryInfo(odinBuildFolder.buildEntry.asset);
-            if (!info.Exists) return;
+            if (!EditorFileUtils.IsDirectory(odinBuildFolder.buildEntry.asset)) return;
             string entryMenuName = odinBuildFolder.GetMenuName();
             OdinBuildFolder odinFolderBuildFolder =
                 new OdinBuildFolder(odinBuildFolder.buildEntry, groupEditor.odinBuildGroup);
@@ -125,10 +124,10 @@ namespace xasset.editor.Odin
                 cacheMenuDic.Add(entryMenuName, menuFolder);
             // return;
             var subDirectories =
-                EditorFileUtils.GetTopDirectories(odinBuildFolder.buildEntry.asset);
+                EditorFileUtils.GetTopDirectoryPaths(odinBuildFolder.buildEntry.asset);
             for (int i = 0; i < subDirectories.Length; i++)
             {
-                string subDirectoryPath = subDirectories[i].assetPath;
+                string subDirectoryPath = subDirectories[i];
                 BuildEntry subBuildEntry =
                     OdinExtension.CreateBuildEntry(subDirectoryPath, odinBuildFolder.buildEntry);
                 OdinBuildFolder subOdinBuildFolder = new OdinBuildFolder(subBuildEntry, groupEditor.odinBuildGroup);
