@@ -58,15 +58,11 @@ namespace xasset.editor.Odin
             OdinExtension.ClearCacheBuildDic();
             if (cacheMenuDic == null) cacheMenuDic = new Dictionary<string, object>();
             cacheMenuDic.Clear();
-            var list = EditorFileUtils.FindAllAssets<Build>("Assets/xasset/Config/Builds");
+            Build[] list = OdinExtension.GetAllBuildConfig;
             for (int i = 0; i < list.Length; i++)
             {
                 Build build = list[i] as Build;
-                if (build == null)
-                {
-                    Debug.LogError($"{list[i].name} is not {typeof(Build)}");
-                    continue;
-                }
+  
 
                 List<OdinBuildGroup> odinBuildGroups = new List<OdinBuildGroup>();
                 OdinExtension.CacheBuildDic(build,odinBuildGroups);

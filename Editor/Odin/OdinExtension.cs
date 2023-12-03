@@ -7,7 +7,7 @@ namespace xasset.editor.Odin
 {
     public class OdinExtension
     {
-        public static UnityEngine.Object[] GetAllBuildConfig => EditorFileUtils.FindAllAssets<UnityEngine.Object>("Assets/xasset/Config/Builds");
+        public static Build[] GetAllBuildConfig => EditorFileUtils.FindAllAssets<Build>("Assets/com.regina.xasset/Config/Builds");
 
         public static bool IsBuildConfigChanged()
         {
@@ -16,13 +16,7 @@ namespace xasset.editor.Odin
             if (files.Length != cacheBuildDic.Keys.Count) return true;
             for (int i = 0; i < files.Length; i++)
             {
-                Build fileBuild = files[i] as Build;
-                if (fileBuild == null)
-                {
-                    Debug.LogError($"find not {typeof(Build)} file: {files[i].name}");
-                    continue;
-                }
-
+                Build fileBuild = files[i];
                 Build cacheBuild = null;
                 foreach (var item in cacheBuildDic.Keys)
                 {
@@ -62,7 +56,7 @@ namespace xasset.editor.Odin
 
         public static void SaveBuildConfig(Build build)
         {
-            var array = EditorFileUtils.FindAllAssets<Build>("Assets/xasset/Config/Builds");
+            var array = GetAllBuildConfig;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i].name == build.name)
