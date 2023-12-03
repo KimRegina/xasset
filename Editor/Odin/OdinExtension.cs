@@ -7,7 +7,7 @@ namespace xasset.editor.Odin
 {
     public class OdinExtension
     {
-        public static Build[] GetAllBuildConfig => EditorFileUtils.FindAllAssets<Build>("Assets/com.regina.xasset/Config/Builds");
+        public static Build[] GetAllBuildConfig => EditorFileUtils.FindAllAssets<Build>("*","Assets/com.regina.xasset/Config/Builds");
 
         public static bool IsBuildConfigChanged()
         {
@@ -112,5 +112,13 @@ namespace xasset.editor.Odin
             int lastIndex = buildEntry.asset.LastIndexOf('/');
             return buildEntry.asset.Substring(lastIndex);
         }
+
+        public static OdinLabelsEnum GetOdinLabelsEnum(string assetPath)
+        {
+            string[] labels = EditorFileUtils.GetLabels(assetPath);
+            OdinLabelsEnum labelsEnum = new OdinLabelsEnum(labels);
+            return labelsEnum;
+        }
+        
     }
 }

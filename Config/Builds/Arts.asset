@@ -24,35 +24,41 @@ MonoBehaviour:
     enabled: 1
     deliveryMode: 0
     assets:
-    - asset: Assets/xasset/Samples/Arts/Scenes/Splash.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/Splash.unity
       bundleMode: 0
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_splash_unity.bundle
-    - asset: Assets/xasset/Samples/Arts/Scenes/OpeningDialog.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/OpeningDialog.unity
       bundleMode: 2
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_openingdialog_unity.bundle
-    - asset: Assets/xasset/Samples/Arts/Scenes/Menu.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/Menu.unity
       bundleMode: 2
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_menu_unity.bundle
-    - asset: Assets/xasset/Samples/Arts/Scenes/CheckForUpdates.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/CheckForUpdates.unity
       bundleMode: 2
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_checkforupdates_unity.bundle
-    - asset: Assets/xasset/Samples/Arts/Prefabs/LoadingScreen.prefab
+    - asset: Assets/com.regina.xasset/Samples/Arts/Prefabs/LoadingScreen.prefab
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: loadingscreen.bundle
-    - asset: Assets/xasset/Samples/Arts/Prefabs/MessageBox.prefab
+    - asset: Assets/com.regina.xasset/Samples/Arts/Prefabs/MessageBox.prefab
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: messagebox.bundle
     desc: "\u521D\u59CB\u5316\u7684\u8D44\u6E90"
   - name: Download
@@ -60,10 +66,11 @@ MonoBehaviour:
     enabled: 1
     deliveryMode: 2
     assets:
-    - asset: Assets/xasset/Samples/Arts/Scenes/Download.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/Download.unity
       bundleMode: 5
       addressMode: 0
       filter: 
+      tag: 0
       bundle: scenes_download_unity.bundle
     desc: 
   - name: LoadAsset
@@ -71,35 +78,41 @@ MonoBehaviour:
     enabled: 1
     deliveryMode: 2
     assets:
-    - asset: Assets/xasset/Samples/Arts/Scenes/LoadAsset.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/LoadAsset.unity
       bundleMode: 2
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_loadasset_unity.bundle
-    - asset: Assets/xasset/Samples/Arts/Textures/igg.png
+    - asset: Assets/com.regina.xasset/Samples/Arts/Textures/igg.png
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: igg.bundle
-    - asset: Assets/xasset/Samples/Arts/Textures/biubiux2.png
+    - asset: Assets/com.regina.xasset/Samples/Arts/Textures/biubiux2.png
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: biubiux2.bundle
-    - asset: Assets/xasset/Samples/Arts/Textures/PPJT.png
+    - asset: Assets/com.regina.xasset/Samples/Arts/Textures/PPJT.png
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: ppjt.bundle
-    - asset: Assets/xasset/Samples/Arts/Prefabs/CycleReferences2.prefab
+    - asset: Assets/com.regina.xasset/Samples/Arts/Prefabs/CycleReferences2.prefab
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: cyclereferences2.bundle
-    - asset: Assets/xasset/Samples/Arts/Prefabs/CycleReferences1.prefab
+    - asset: Assets/com.regina.xasset/Samples/Arts/Prefabs/CycleReferences1.prefab
       bundleMode: 1
       addressMode: 1
       filter: 
+      tag: 0
       bundle: cyclereferences1.bundle
     desc: 
   - name: LoadAdditiveScene
@@ -107,14 +120,16 @@ MonoBehaviour:
     enabled: 1
     deliveryMode: 2
     assets:
-    - asset: Assets/xasset/Samples/Arts/Scenes/LoadAdditiveScene.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/LoadAdditiveScene.unity
       bundleMode: 3
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_loadadditivescene_unity.bundle
-    - asset: Assets/xasset/Samples/Arts/Scenes/Additive.unity
+    - asset: Assets/com.regina.xasset/Samples/Arts/Scenes/Additive.unity
       bundleMode: 3
       addressMode: 2
       filter: 
+      tag: 0
       bundle: scenes_additive_unity.bundle
     desc: 

@@ -130,7 +130,7 @@ namespace xasset.editor.Odin
                 asset = entry.asset;
                 bundleMode = entry.bundleMode;
                 addressMode = entry.addressMode;
-                tag = (TagEnum) Enum.ToObject(typeof(TagEnum), entry.tag);
+                labels = OdinExtension.GetOdinLabelsEnum(entry.asset);
             }
 
             [HorizontalGroup("Assets/Item", Width = 150), VerticalGroup("Assets")]
@@ -153,13 +153,12 @@ namespace xasset.editor.Odin
                 set { entry.addressMode = value; }
             }
 
-            [HorizontalGroup("Assets/Item", Width = 100)]
-            [HideLabel, ShowInInspector]
-            public TagEnum tag
-            {
-                get { return (TagEnum) Enum.ToObject(typeof(TagEnum), entry.tag); }
-                set { entry.tag = (ulong) value; }
-            }
+            [HorizontalGroup("Assets/Item")] [HideLabel, ShowInInspector, OdinLabels]
+            public OdinLabelsEnum labels;
+            // {
+            //     get { return OdinExtension.GetOdinLabelsEnum(entry.asset); }
+            //     set { entry.tag = (ulong) value; }
+            // }
 
             [HorizontalGroup("Assets/Item", MinWidth = 400), HideLabel, ReadOnly, ShowInInspector]
             public string path => entry.asset;

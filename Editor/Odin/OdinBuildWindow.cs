@@ -61,9 +61,7 @@ namespace xasset.editor.Odin
             Build[] list = OdinExtension.GetAllBuildConfig;
             for (int i = 0; i < list.Length; i++)
             {
-                Build build = list[i] as Build;
-  
-
+                Build build = list[i];
                 List<OdinBuildGroup> odinBuildGroups = new List<OdinBuildGroup>();
                 OdinExtension.CacheBuildDic(build,odinBuildGroups);
                 AddGroupsMenu(build);
