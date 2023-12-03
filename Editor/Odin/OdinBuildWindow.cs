@@ -113,7 +113,7 @@ namespace xasset.editor.Odin
         /// <param name="groupEditor"></param>
         private static void AddSubDirectoryMenu(OdinBuildFolder odinBuildFolder, OdinBuildGroupEditor groupEditor)
         {
-            if (!EditorFileUtils.IsDirectory(odinBuildFolder.buildEntry.asset)) return;
+            if (!AssetDatabase.IsValidFolder(odinBuildFolder.buildEntry.asset)) return;
             string entryMenuName = odinBuildFolder.GetMenuName();
             OdinBuildFolder odinFolderBuildFolder =
                 new OdinBuildFolder(odinBuildFolder.buildEntry, groupEditor.odinBuildGroup);
@@ -124,7 +124,7 @@ namespace xasset.editor.Odin
                 cacheMenuDic.Add(entryMenuName, menuFolder);
             // return;
             var subDirectories =
-                EditorFileUtils.GetTopDirectoryPaths(odinBuildFolder.buildEntry.asset);
+                AssetDatabase.GetSubFolders(odinBuildFolder.buildEntry.asset);
             for (int i = 0; i < subDirectories.Length; i++)
             {
                 string subDirectoryPath = subDirectories[i];
