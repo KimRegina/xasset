@@ -3,16 +3,42 @@ using UnityEditor;
 using System.Collections;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using com.regina.fUnityTools.Editor;
 using Unity.EditorCoroutines.Editor;
+using UnityEngine;
 
 namespace xasset.editor.Odin
 {
+
+    public enum SettingType
+    {
+        SearchAssets = 0,
+        SearchBundles = 1,
+    }
+    
     public class OdinBuildSettings
     {
-        [HorizontalGroup("Settings", Width = 100)] [ShowInInspector] [HideLabel]
+        private SettingType mSettingType;
+
+        [TitleGroup("Settings",Order = -1), HideLabel, ShowInInspector, EnumToggleButtons]
+        public SettingType settingType
+        {
+            get => mSettingType;
+            set
+            {
+                mSettingType = value;
+                if (mSettingType == SettingType.SearchBundles) TryCollect();
+            }
+        }
+        
+        [ShowIf("settingType",SettingType.SearchAssets)]
+        [HorizontalGroup("Settings/Tools", Width = 100,Order = 1)] [ShowInInspector] [HideLabel]
         private static string search;
 
-        [HorizontalGroup("Settings", Width = 100)]
+        [ShowIf("settingType",SettingType.SearchAssets)]
+        [HorizontalGroup("Settings/Tools", Width = 100,Order = 1)]
         [ShowInInspector]
         private void SearchAssets()
         {
@@ -22,7 +48,8 @@ namespace xasset.editor.Odin
 
         private bool ShowResults => odinBuildEntries != null && odinBuildEntries.Count > 0;
 
-        [VerticalGroup("Assets"), HideLabel, ShowInInspector, ShowIf("ShowResults")]
+        [VerticalGroup("Settings/Search"), HideLabel, ShowInInspector,
+         ShowIf("@this.ShowResults && this.settingType == SettingType.SearchAssets")]
         [TableList(IsReadOnly = true, ShowIndexLabels = true, AlwaysExpanded = true, ShowPaging = true,
             NumberOfItemsPerPage = 35)]
         private List<OdinBuildSearch> odinBuildEntries;
@@ -47,14 +74,14 @@ namespace xasset.editor.Odin
                     buildEntries.AddRange(build.groups[i].assets);
                 }
             }
-            
+
             buildEntries.Sort((a, b) => { return String.Compare(a.asset, b.asset, StringComparison.Ordinal); });
             List<OdinBuildSearch> retList = new List<OdinBuildSearch>();
             for (int i = 0; i < results.Length; i++)
             {
                 string resultAssetPath = results[i];
                 EditorUtility.DisplayProgressBar($"搜索中...",
-                    $"已搜集：{resultAssetPath}", (float)i / results.Length);
+                    $"已搜集：{resultAssetPath}", (float) i / results.Length);
                 for (int j = 0; j < buildEntries.Count; j++)
                 {
                     BuildEntry configBuildEntry = buildEntries[j];
@@ -94,6 +121,65 @@ namespace xasset.editor.Odin
 
             return list;
         }
+
+        private void TryCollect()
+        {
+            var builds = Settings.FindAssets<Build>();
+            if (builds.Length == 0)
+            {
+                Logger.I("Nothing to build.");
+                return;
+            }
+
+            var assets = new List<BuildEntry>();
+            foreach (var build in builds)
+            {
+                var item = build.parameters;
+                item.name = build.name;
+                var task = BuildTask.StartNew(build, new CollectAssets(), new OptimizeDependencies());
+                if (!string.IsNullOrEmpty(task.error)) return;
+
+                foreach (var asset in task.assets) assets.Add(asset);
+            }
+
+            var assetWithGroups = new Dictionary<string, HashSet<BuildEntry>>();
+            foreach (var entry in assets)
+            {
+                if (!assetWithGroups.TryGetValue(entry.bundle, out var refs))
+                {
+                    refs = new HashSet<BuildEntry>();
+                    assetWithGroups.Add(entry.bundle, refs);
+                }
+
+                refs.Add(entry);
+            }
+
+            if (results == null) results = new List<OdinBundleResult>();
+            // var sb = new StringBuilder();
+            foreach (var pair in assetWithGroups)
+            {
+                bool isExisted = false;
+                for (int i = 0; i < results.Count; i++)
+                {
+                    if (results[i].BundleName.Equals(pair.Key))
+                    {
+                        isExisted = true;
+                        break;
+                    }
+                }
+
+                if(isExisted) continue;
+                OdinBundleResult result = new OdinBundleResult(pair.Key,pair.Value.ToList());
+                results.Add(result);
+            }
+        }
+
+        private bool showCollectResult => results != null && results.Count > 0;
+
+        [HideLabel, ShowInInspector, ShowIf("@this.showCollectResult && this.settingType == SettingType.SearchBundles")]
+        [TableList(IsReadOnly = true, ShowIndexLabels = true, AlwaysExpanded = true, ShowPaging = true,
+             NumberOfItemsPerPage = 35), VerticalGroup("Settings/Results",Order =  1)]
+        public List<OdinBundleResult> results;
     }
 
     public class OdinBuildSearch
@@ -120,10 +206,50 @@ namespace xasset.editor.Odin
 
         [HorizontalGroup("Assets/Item", Width = 100)]
         [ReadOnly, HideLabel, ShowInInspector]
-        public TagEnum tag => (TagEnum)Enum.ToObject(typeof(TagEnum), entry.tag);
+        public TagEnum tag => (TagEnum) Enum.ToObject(typeof(TagEnum), entry.tag);
 
         [HorizontalGroup("Assets/Item", MinWidth = 400)]
         [ReadOnly, HideLabel, ShowInInspector]
         public string path => entry.asset;
+    }
+
+    public class OdinBundleResult
+    {
+        [HideInInspector]
+        public string BundleName;
+
+        public OdinBundleResult(string bundleName, List<BuildEntry> buildEntries)
+        {
+            BundleName = bundleName;
+            List<OdinBundleItem> list = new List<OdinBundleItem>();
+            for (int i = 0; i < buildEntries.Count; i++)
+            {
+                OdinBundleItem item = new OdinBundleItem(buildEntries[i]);
+                list.Add(item);
+            }
+
+            assets = list;
+        }
+
+        [FoldoutGroup("$BundleName")]
+        [HideLabel, ShowInInspector]
+        [TableList(IsReadOnly = true, ShowIndexLabels = true, AlwaysExpanded = true, ShowPaging = true,
+            NumberOfItemsPerPage = 35)]
+        private List<OdinBundleItem> assets;
+
+        private class OdinBundleItem
+        {
+            public OdinBundleItem(BuildEntry buildEntry)
+            {
+                asset = buildEntry.asset;
+                path = buildEntry.asset;
+            }
+
+            [HorizontalGroup("Item", Width = 100)] [ReadOnly, HideLabel, ObjectReference, ShowInInspector]
+            private string asset;
+
+            [HorizontalGroup("Item", MinWidth = 400)] [ReadOnly, HideLabel, ShowInInspector]
+            public string path;
+        }
     }
 }

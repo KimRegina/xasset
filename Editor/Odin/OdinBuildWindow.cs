@@ -54,10 +54,10 @@ namespace xasset.editor.Odin
         /// <returns></returns>
         private IEnumerator InitBuildConfig()
         {
-            odinMenuTree.Add("Settings", new OdinBuildSettings());
             OdinExtension.ClearCacheBuildDic();
             if (cacheMenuDic == null) cacheMenuDic = new Dictionary<string, object>();
             cacheMenuDic.Clear();
+            AddMenuName("Tools", new OdinBuildSettings());
             Build[] list = OdinExtension.GetAllBuildConfig;
             for (int i = 0; i < list.Length; i++)
             {
@@ -86,9 +86,7 @@ namespace xasset.editor.Odin
                 OdinBuildGroup odinBuildGroup = new OdinBuildGroup(group);
                 OdinBuildGroupEditor menuGroup = new OdinBuildGroupEditor(odinBuildGroup);
                 OdinExtension.cacheBuildDic[build].Add(odinBuildGroup);
-                odinMenuTree.Add(parentMenuName, menuGroup);
-                if (!cacheMenuDic.ContainsKey(parentMenuName))
-                    cacheMenuDic.Add(parentMenuName, menuGroup);
+                AddMenuName(parentMenuName, menuGroup);
                 for (int j = 0; j < group.assets.Length; j++)
                 {
                     BuildEntry buildEntry = group.assets[j];
@@ -113,10 +111,7 @@ namespace xasset.editor.Odin
                 new OdinBuildFolder(odinBuildFolder.buildEntry, groupEditor.odinBuildGroup);
             groupEditor.odinBuildGroup.AddSubOinBuildFolder(odinBuildFolder.buildEntry, odinBuildFolder);
             OdinBuildFolderEditor menuFolder = new OdinBuildFolderEditor(odinFolderBuildFolder);
-            odinMenuTree.Add(entryMenuName, menuFolder);
-            if (!cacheMenuDic.ContainsKey(entryMenuName))
-                cacheMenuDic.Add(entryMenuName, menuFolder);
-            // return;
+            AddMenuName(entryMenuName, menuFolder);
             var subDirectories =
                 AssetDatabase.GetSubFolders(odinBuildFolder.buildEntry.asset);
             for (int i = 0; i < subDirectories.Length; i++)
@@ -134,12 +129,16 @@ namespace xasset.editor.Odin
             return odinMenuTree;
         }
 
-        public void AddMenuName(string menuName, OdinBuildFolderEditor folderEditor)
+        public static void AddMenuName(string menuName, object menuEditor)
         {
-            if (!cacheMenuDic.ContainsKey(menuName)) cacheMenuDic.Add(menuName, folderEditor);
+            if (!cacheMenuDic.ContainsKey(menuName))
+            {
+                cacheMenuDic.Add(menuName, menuEditor);
+                odinMenuTree.Add(menuName,menuEditor);
+            }
         }
 
-        public void DeleteBuildMenu(string menuName)
+        public static void DeleteBuildMenu(string menuName)
         {
             if (cacheMenuDic.ContainsKey(menuName)) cacheMenuDic.Remove(menuName);
         }

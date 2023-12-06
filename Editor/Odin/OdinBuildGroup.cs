@@ -78,9 +78,9 @@ namespace xasset.editor.Odin
                 new OdinBuildFolder(target, this);
             AddSubOinBuildFolder(target, odinFolderBuildFolder);
             OdinBuildFolderEditor menuFolder = new OdinBuildFolderEditor(odinFolderBuildFolder);
-            EditorWindow.GetWindow<OdinBuildWindow>().DeleteBuildMenu(oldMenuName);
+            OdinBuildWindow.DeleteBuildMenu(oldMenuName);
             string newMenuName = $"{groupMenu}/" + OdinExtension.GetBuildEntryName(target);
-            EditorWindow.GetWindow<OdinBuildWindow>().AddMenuName(newMenuName, menuFolder);
+            OdinBuildWindow.AddMenuName(newMenuName, menuFolder);
             RefreshSubFolders(target);
             EditorWindow.GetWindow<OdinBuildWindow>().RefreshMenu();
         }
@@ -92,7 +92,7 @@ namespace xasset.editor.Odin
             if (!AssetDatabase.IsValidFolder(target.asset)) return;
             UpdateGroupMenu();
             string menuName = GetMenuName(target);
-            EditorWindow.GetWindow<OdinBuildWindow>().DeleteBuildMenu(menuName);
+            OdinBuildWindow.DeleteBuildMenu(menuName);
             RefreshSubFolders(target);
             EditorWindow.GetWindow<OdinBuildWindow>().RefreshMenu();
         }
