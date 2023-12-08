@@ -58,7 +58,7 @@ namespace xasset.editor.Odin
             if (cacheMenuDic == null) cacheMenuDic = new Dictionary<string, object>();
             cacheMenuDic.Clear();
             AddMenuName("Tools", new OdinBuildSettings());
-            Build[] list = OdinExtension.GetAllBuildConfig;
+            Build[] list = OdinExtension.AllBuilds;
             for (int i = 0; i < list.Length; i++)
             {
                 Build build = list[i];

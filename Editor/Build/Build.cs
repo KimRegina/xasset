@@ -101,6 +101,7 @@ namespace xasset.editor
         public string name { get; set; }
     }
 
+    [Serializable]
     public class BuildBundle
     {
         public readonly List<string> assets = new List<string>();

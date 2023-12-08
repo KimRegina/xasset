@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using UnityEditor;
-using com.regina.fUnityTools.Editor;
 using UnityEngine;
+using System.Collections.Generic;
+using System.IO;
+using com.regina.fUnityTools.Editor;
 
 namespace xasset.editor.Odin
 {
     public class OdinExtension
     {
-        public static Build[] GetAllBuildConfig => EditorFileUtils.FindAllAssets<Build>("*","Assets/com.regina.xasset/Config/Builds");
+        public static Build[] AllBuilds =>
+            EditorFileUtils.FindAllAssets<Build>("*", "Assets/com.regina.xasset/Config/Builds");
 
         public static bool IsBuildConfigChanged()
         {
             if (cacheBuildDic == null) return true;
-            var files = GetAllBuildConfig;
+            var files = AllBuilds;
             if (files.Length != cacheBuildDic.Keys.Count) return true;
             for (int i = 0; i < files.Length; i++)
             {
@@ -48,7 +52,7 @@ namespace xasset.editor.Odin
             if (cacheBuildDic == null) cacheBuildDic = new Dictionary<Build, List<OdinBuildGroup>>();
             cacheBuildDic.Clear();
         }
-        
+
         public static void CacheBuildDic(Build key, List<OdinBuildGroup> val)
         {
             cacheBuildDic.Add(key, val);
@@ -56,7 +60,7 @@ namespace xasset.editor.Odin
 
         public static void SaveBuildConfig(Build build)
         {
-            var array = GetAllBuildConfig;
+            var array = AllBuilds;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i].name == build.name)
@@ -93,6 +97,36 @@ namespace xasset.editor.Odin
             return entry;
         }
 
+        public static string DefaultConfigPath
+        {
+            get
+            {
+                var path = AssetDatabase.GetAssetPath(Settings.GetDefaultSettings());
+                return Path.GetDirectoryName(path);
+            }
+        }
+
+        public static OdinBuildCache OdinBuildCache
+        {
+            get
+            {
+                OdinBuildCache odinBuildCache =
+                    GetOrCreateAsset<OdinBuildCache>($"{DefaultConfigPath}/OdinBuildCache.asset");
+                return odinBuildCache;
+            }
+        }
+
+        public static T GetOrCreateAsset<T>(string path, Action<T> onCreate = null) where T : ScriptableObject
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (asset != null) return asset;
+            Utility.CreateDirectoryIfNecessary(path);
+            asset = UnityEngine.ScriptableObject.CreateInstance<T>();
+            AssetDatabase.CreateAsset(asset, path);
+            onCreate?.Invoke(asset);
+            return asset;
+        }
+
         public static void SaveChanges()
         {
             // if (OdinBuildWindow.cacheBuildDic == null) return;
@@ -119,6 +153,58 @@ namespace xasset.editor.Odin
             OdinLabelsEnum labelsEnum = new OdinLabelsEnum(labels);
             return labelsEnum;
         }
-        
+
+
+        public static void CollectReference(UnityEngine.Object asset)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(asset);
+            Build[] builds = AllBuilds;
+            BuildEntry target = null;
+            for (int i = 0; i < builds.Length; i++)
+            {
+                BuildGroup[] groups = builds[i].groups;
+                for (int j = 0; j < groups.Length; j++)
+                {
+                    for (int k = 0; k < groups[j].assets.Length; k++)
+                    {
+                        BuildEntry entry = groups[j].assets[k];
+                        if (assetPath.Contains(entry.asset))
+                        {
+                            assetPath = entry.asset;
+                            target = entry;
+                        }
+                    }
+                }
+            }
+
+            if (target != null)
+            {
+                Debug.Log($"find asset bundle name: {target.bundle}");
+            }
+        }
+
+        public static List<OdinBundleResult> CollectBundleResults()
+        {
+            var builds = Settings.FindAssets<Build>();
+            List<OdinBundleResult> results = new List<OdinBundleResult>();
+            if (builds.Length == 0)
+            {
+                Logger.I("Nothing to build.");
+                return results;
+            }
+
+            foreach (var build in builds)
+            {
+                var item = build.parameters;
+                item.name = build.name;
+                var task = BuildTask.StartNew(build,
+                    new CollectAssets(),
+                    new OptimizeDependencies(),
+                    new BuildBundles(),
+                    new SaveOdinBuild());
+            }
+
+            return results;
+        }
     }
 }
