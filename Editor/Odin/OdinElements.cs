@@ -32,9 +32,9 @@ namespace xasset.editor.Odin
         [ReadOnly, HideLabel, ShowInInspector]
         public AddressMode addressMode => entry.addressMode;
 
-        [HorizontalGroup("Assets/Item", Width = 100)]
-        [ReadOnly, HideLabel, ShowInInspector]
-        public TagEnum tag => (TagEnum) Enum.ToObject(typeof(TagEnum), entry.tag);
+        [HorizontalGroup("Assets/Item", Width = 100)] 
+        [ReadOnly, HideLabel, ShowInInspector, OdinLabels]
+        public OdinLabelsEnum labels;
 
         [HorizontalGroup("Assets/Item", MinWidth = 400)]
         [ReadOnly, HideLabel, ShowInInspector]

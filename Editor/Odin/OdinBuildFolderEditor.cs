@@ -70,7 +70,7 @@ namespace xasset.editor.Odin
 
             [HorizontalGroup("Assets/Item", Width = 100)]
             [ReadOnly, HideLabel, ShowInInspector]
-            public TagEnum tag => (TagEnum) Enum.ToObject(typeof(TagEnum), entry.tag);
+            public OdinLabelsEnum labels => OdinExtension.GetOdinLabelsEnum(asset);
 
             [HorizontalGroup("Assets/Item", MinWidth = 400)]
             [ReadOnly, HideLabel, ShowInInspector]

@@ -47,11 +47,6 @@ namespace xasset.editor
         ///     资产路径是目录的时候有效，用法参考 AssetDatabase.FindAssets
         /// </summary>
         public string filter;
-
-        /// <summary>
-        ///     资产标签
-        /// </summary>
-        public ulong tag;
         
         /// <summary>
         ///     根据打包模式生成的 bundle 名字

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using com.regina.fUnityTools.Editor;
+using Unity.EditorCoroutines.Editor;
 
 namespace xasset.editor.Odin
 {
@@ -77,7 +79,6 @@ namespace xasset.editor.Odin
         {
             BuildEntry entry = new BuildEntry();
             entry.asset = assetPath;
-            entry.tag = 0;
             entry.filter = "";
             entry.owner = null;
             entry.addressMode = AddressMode.LoadByPath;
@@ -89,7 +90,6 @@ namespace xasset.editor.Odin
         {
             BuildEntry entry = new BuildEntry();
             entry.asset = assetPath;
-            entry.tag = parent.tag;
             entry.filter = parent.filter;
             entry.owner = parent.owner;
             entry.addressMode = parent.addressMode;
@@ -127,20 +127,6 @@ namespace xasset.editor.Odin
             return asset;
         }
 
-        public static void SaveChanges()
-        {
-            // if (OdinBuildWindow.cacheBuildDic == null) return;
-            // foreach (var item in OdinBuildWindow.cacheBuildDic)
-            // {
-            //     List<OdinBuildGroup> list = item.Value;
-            //     for (int i = 0; i < list.Count; i++)
-            //         list[i].SaveModifies();
-            //     EditorUtility.SetDirty(item.Key);
-            // }
-
-            AssetDatabase.Refresh();
-        }
-
         public static string GetBuildEntryName(BuildEntry buildEntry)
         {
             int lastIndex = buildEntry.asset.LastIndexOf('/');
@@ -153,7 +139,6 @@ namespace xasset.editor.Odin
             OdinLabelsEnum labelsEnum = new OdinLabelsEnum(labels);
             return labelsEnum;
         }
-
 
         public static void CollectReference(UnityEngine.Object asset)
         {

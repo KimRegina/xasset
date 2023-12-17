@@ -82,7 +82,6 @@ namespace xasset.editor.Odin
         [VerticalGroup("Groups/Settings/Right/Button"), Button("保存", 35)]
         private void SaveModified()
         {
-            OdinExtension.SaveChanges();
         }
 
         [HorizontalGroup("Groups/Settings"), ShowInInspector]
@@ -155,10 +154,6 @@ namespace xasset.editor.Odin
 
             [HorizontalGroup("Assets/Item")] [HideLabel, ShowInInspector, OdinLabels]
             public OdinLabelsEnum labels;
-            // {
-            //     get { return OdinExtension.GetOdinLabelsEnum(entry.asset); }
-            //     set { entry.tag = (ulong) value; }
-            // }
 
             [HorizontalGroup("Assets/Item", MinWidth = 400), HideLabel, ReadOnly, ShowInInspector]
             public string path => entry.asset;
